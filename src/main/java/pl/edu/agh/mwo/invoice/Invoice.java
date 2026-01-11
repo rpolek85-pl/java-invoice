@@ -1,30 +1,48 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import pl.edu.agh.mwo.invoice.product.Product;
 
 public class Invoice {
-    private Collection<Product> products;
+    private Collection<Product> products = new ArrayList<>();
 
-    public void addProduct(Product product) {
-        // TODO: implement
+    public void addProduct(Product product) throws IllegalArgumentException {
+        if(product == null){throw new IllegalArgumentException();}
+        this.products.add(product);
     }
 
-    public void addProduct(Product product, Integer quantity) {
-        // TODO: implement
+    public void addProduct(Product product, Integer quantity) throws IllegalArgumentException {
+        if (quantity < 1) {throw new IllegalArgumentException("quantity cannot be 0 or negative");}
+
+        for(int i =1; i<=quantity; i++){
+            this.products.add(product);
+        }
     }
 
     public BigDecimal getSubtotal() {
-        return null;
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for(Product product : this.products){
+           subtotal =  subtotal.add(product.getPrice());
+        }
+        return subtotal;
     }
 
     public BigDecimal getTax() {
-        return null;
+        BigDecimal tax = BigDecimal.ZERO;
+        for(Product product : this.products){
+            tax = tax.add(product.getPrice().multiply(product.getTaxPercent()));
+        }
+        return tax;
     }
 
     public BigDecimal getTotal() {
-        return null;
+        BigDecimal total = BigDecimal.ZERO;
+        for(Product product : this.products){
+            total =  total.add(product.getPriceWithTax());
+        }
+        return total;
     }
 }
