@@ -9,8 +9,11 @@ public abstract class Product {
 
     private final BigDecimal taxPercent;
 
-    protected Product(String name, BigDecimal price, BigDecimal tax) {
+    protected Product(String name, BigDecimal price, BigDecimal tax) throws IllegalArgumentException {
+        if(name==null || name.isEmpty()){ throw new IllegalArgumentException("name is null or empty"); }
         this.name = name;
+
+        if((price == null) || price.compareTo(new BigDecimal(0)) < 0){ throw new IllegalArgumentException("price is null or negative"); }
         this.price = price;
         this.taxPercent = tax;
     }
