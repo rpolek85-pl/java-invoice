@@ -37,9 +37,7 @@ public abstract class Product {
     }
 
     public BigDecimal getPriceWithTax() {
-        return price.multiply(taxPercent)
-                .add(price)
-                .setScale(2, RoundingMode.HALF_UP);
+        return price.multiply(taxPercent).add(price);
     }
 
 }
