@@ -13,12 +13,17 @@ import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
 import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class InvoiceTest {
     private Invoice invoice;
+    private Invoice invoice2;
 
     @Before
     public void createEmptyInvoiceForTheTest() {
         invoice = new Invoice();
+        invoice2 = new Invoice();
     }
 
     @Test
@@ -125,4 +130,74 @@ public class InvoiceTest {
     public void testAddingNullProduct() {
         invoice.addProduct(null);
     }
+
+
+    @Test
+    public void testEmptyInvoiceNumber() {
+        Assert.assertThat(1, Matchers.comparesEqualTo(invoice.getInvoiceNumber()));
+    }
+
+    @Test
+    public void testEmptyInvoiceNumberGreaterThanOne() {
+        assertTrue(invoice.getInvoiceNumber() > 0);
+    }
+
+    @Test
+    public void testEmptyTwoInvoiceRosnaNumer() {
+        assertTrue(invoice.getInvoiceNumber() < invoice2.getInvoiceNumber());
+    }
+
+    @Test
+    public void testEmptyInvoicMaStalyNumer() {
+        assertEquals(invoice.getInvoiceNumber(), invoice.getInvoiceNumber());
+    }
+
+    @Test
+    public void testPrintProductsSingleProduct() {
+        invoice.addProduct(new DairyProduct("Zsiadle mleko", new BigDecimal("5.55")), 1);
+
+        String result = invoice.printProducts();
+
+        assertTrue(result.contains("Zsiadle mleko"));
+        assertTrue(result.contains("quantity: 1"));
+        assertTrue(result.contains("price: 5.55"));
+        assertTrue(result.contains("priceWithTax: 5.99"));
+    }
+
+    @Test
+    public void testPrintProductsTwoProducts() {
+        invoice.addProduct(new DairyProduct("Zsiadle mleko", new BigDecimal("5.55")), 1);
+        invoice.addProduct(new DairyProduct("Śmietana", new BigDecimal("5.55")), 2);
+
+        String result = invoice.printProducts();
+
+        assertTrue(result.contains("Zsiadle mleko"));
+        assertTrue(result.contains("Śmietana"));
+        assertTrue(result.split("\n").length >= 2);
+    }
+
+    @Test
+    public void testPrintProductsEmptyInvoice() {
+        String result = invoice.printProducts();
+
+        assertEquals("", result);
+    }
+
+    @Test
+    public void addingSameProduct() {
+        Product product = new TaxFreeProduct("Chleb", new BigDecimal("5"));
+
+        invoice.addProduct(product, 2);
+        invoice.addProduct(product, 1);
+
+        assertEquals(Integer.valueOf(3), invoice.getProductQuantity(product));
+    }
+
+    @Test
+    public void getProductQuantityNonExistentProduct() {
+        Product product = new TaxFreeProduct("Chleb", new BigDecimal("5"));
+
+        assertEquals(Integer.valueOf(0), invoice.getProductQuantity(product));
+    }
+
 }

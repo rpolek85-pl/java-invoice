@@ -7,6 +7,19 @@ import java.util.Map;
 import pl.edu.agh.mwo.invoice.product.Product;
 
 public class Invoice {
+    private int invoiceNumber;
+    private static int staticNumber = 0;
+
+
+    public Invoice() {
+        staticNumber ++;
+        invoiceNumber = staticNumber;
+    }
+
+    public int getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
     private Map<Product, Integer> products = new HashMap<Product, Integer>();
 
     public void addProduct(Product product) {
@@ -17,7 +30,13 @@ public class Invoice {
         if (product == null || quantity <= 0) {
             throw new IllegalArgumentException();
         }
-        products.put(product, quantity);
+
+        Integer q = products.getOrDefault(product, 0);
+        products.put(product, q + quantity);
+    }
+
+    public Object getProductQuantity(Product product) {
+        return products.getOrDefault(product, 0);
     }
 
     public BigDecimal getNetTotal() {
@@ -40,5 +59,22 @@ public class Invoice {
             totalGross = totalGross.add(product.getPriceWithTax().multiply(quantity));
         }
         return totalGross;
+    }
+
+    public String printProducts() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Map.Entry<Product, Integer> entry : products.entrySet()) {
+            Product product = entry.getKey();
+            Integer quantity = entry.getValue();
+
+            sb.append(product.getName());
+            sb.append(" | quantity: ").append(quantity);
+            sb.append(" | price: ").append(product.getPrice());
+            sb.append(" | priceWithTax: ").append(product.getPriceWithTax());
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 }
